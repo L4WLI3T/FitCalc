@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bmi_calculator/screens/pedo.dart';
 import 'package:flutter_bmi_calculator/components/bottom_button.dart';
 import 'package:flutter_bmi_calculator/components/icon_content.dart';
 import 'package:flutter_bmi_calculator/components/reusable_card.dart';
@@ -6,21 +9,61 @@ import 'package:flutter_bmi_calculator/components/round_icon_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_bmi_calculator/constants.dart';
 import 'package:flutter_bmi_calculator/utils/calculate_bmi.dart';
+import 'package:geolocator/geolocator.dart';
 import 'result_screen.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
 
 
+class FitCalcStorage {
+  Future<String> get _localPath async {
+    final directory = await getExternalStorageDirectory();
+    print(directory.path);
+
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/logs.txt');
+  }
 
 
+  Future<File> writeFit(String bmi,String fat) async {
+    final file = await _localFile;
 
+    // Write the file
+    return file.writeAsString('$bmi \t $fat', mode: FileMode.append);  ////
+  }
+}
+
+void getAddressFromLatLng() async {
+    var widget;
+    String b='10';
+    String f='10';
+    return widget.storage.writeFit(b,f);
+
+}
+/*void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+  });
+}
+*/
+final _firestore=Firestore.instance;
 enum Gender {
   male,
   female,
 }
 
 class CalculatorScreen extends StatefulWidget {
+  static String id = 'ctr';
+  const CalculatorScreen({key, this.storage}) : super(key: key);
+  final FitCalcStorage storage;
   @override
   CalculatorScreenState createState() => CalculatorScreenState();
+
 }
 
 class navState extends State<CalculatorScreen>{
@@ -47,6 +90,9 @@ class navState extends State<CalculatorScreen>{
         title: new Text('Profile'),
         ),
        ],
+       //currentIndex: _selectedIndex,
+       //selectedItemColor: Colors.amber[800],
+       //onTap: _onItemTapped,
       ),
     );
   }
@@ -59,6 +105,42 @@ class navState extends State<CalculatorScreen>{
 
 
 class CalculatorScreenState extends State<CalculatorScreen> {
+  int _selectedIndex = 1;
+  List<Widget> _widgetOptions = <Widget>[
+    Pedo(),
+    CalculatorScreen(),
+
+    //ProfilePage(),
+  ];
+  /*int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Home',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 2: School',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+*/
+  //final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  //geolocator.forceAndroidLocationManager = true;
+  //final position = Geolocator.getCurrentPosition();
+  //Position _currentPosition;
+  //String _currentAddress;
   Gender selectedGender;
   int gender = 0;
   int height = 180;
@@ -66,7 +148,7 @@ class CalculatorScreenState extends State<CalculatorScreen> {
   int age = 20;
   int neck = 50;
   int waist = 90;
-
+  getAddressFromLatLng(){}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,11 +158,12 @@ class CalculatorScreenState extends State<CalculatorScreen> {
       resizeToAvoidBottomPadding: false,
       bottomNavigationBar: BottomNavigationBar(
           //currentIndex: currentIndex = 0,
+        currentIndex: _selectedIndex,
           items: [
         BottomNavigationBarItem(
         icon: new Icon(Icons.home),
         title: new Text('Home'),
-       ),
+        ),
         BottomNavigationBarItem(
         icon: new Icon(Icons.fitness_center),
         title: new Text('Calculate'),
@@ -90,12 +173,23 @@ class CalculatorScreenState extends State<CalculatorScreen> {
         title: new Text('Profile'),
         ),
        ],
-        currentIndex: 1,
+        onTap: (index) {
+          if(index==0)
+            Navigator.pushNamed(context, Pedo.id);
+          else if (index ==1)
+            Navigator.pushNamed(context, CalculatorScreen.id);
+          /*setState(() {
+            _selectedIndex = index;
+          });*/
+        },
+        //currentIndex: 1,
         selectedItemColor: Colors.red[800],
         unselectedItemColor: Colors.black,
         backgroundColor: Color(0xFFFFE082),
-        //onTap: _onItemTapped,
+        //currentIndex: _selectedIndex,
+        //selectedItemColor: Colors.amber[800],
       ),
+
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -170,9 +264,9 @@ class CalculatorScreenState extends State<CalculatorScreen> {
                       thumbColor: Color(0xFFEB1555),
                       overlayColor: Color(0x29EB1555),
                       thumbShape:
-                      RoundSliderThumbShape(enabledThumbRadius: 15.0),
+                      RoundSliderThumbShape(enabledThumbRadius: 12.0),
                       overlayShape:
-                      RoundSliderOverlayShape(overlayRadius: 30.0),
+                      RoundSliderOverlayShape(overlayRadius: 20.0),
                     ),
                     child: Slider(
                       value: height.toDouble(),
@@ -383,7 +477,17 @@ class CalculatorScreenState extends State<CalculatorScreen> {
               logMessage = e.stackTrace.toString();*/
               BmiLogic calc =
               BmiLogic(height: height, weight: weight, gender:gender, waist:waist, neck:neck);
-
+              if(true){
+                _firestore.collection('FitnessCalculation').add({
+                  'bmi':calc.calculateBMI(),
+                  'fat':calc.calculateFP(),
+                });
+              }
+              /*if(true){
+                var x = calc.calculateBMI();
+                var y = calc.calculateFP();
+                widget.storage.writeFit(x,y);
+              }*/
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -392,7 +496,6 @@ class CalculatorScreenState extends State<CalculatorScreen> {
                     fatResult: calc.calculateFP(),
                     resultText: calc.getResult(),
                     interpretation: calc.getInterpretation(),
-
                   ),
                 ),
               );

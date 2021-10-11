@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+
 class BmiLogic {
   BmiLogic({this.height, this.weight,this.gender,this.waist,this.neck});
 
@@ -20,13 +22,16 @@ class BmiLogic {
 
   String calculateFP()
   {
-    if(gender==1)
-      _fp = (495/(1.0324-0.19077*(log(waist-neck)/log(10))+ 0.15456*log(height)/log(10))) - 450;
-    else
-      _fp = (495/(1.29597-0.35004*(log(waist-neck)/log(10))+ 0.22100*log(height)/log(10))) - 450;
+    if(gender==1) {
+      _fp = (495 / (1.0324 - 0.19077 * (log(waist - neck) / log(10)) +
+          0.15456 * log(height) / log(10))) - 450;
+    }
+    else {
+      _fp = (495 / (1.29597 - 0.35004 * (log(waist+85 - neck) / log(10)) +
+          0.22100 * log(height) / log(10))) - 450;
+    }
     return _fp.toStringAsFixed(1);
   }
-
   String getResult() {
     if (_bmi >= 25) {
       return 'Overweight';

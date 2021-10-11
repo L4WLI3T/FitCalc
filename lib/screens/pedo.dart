@@ -1,25 +1,64 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_bmi_calculator/screens/calculator_screen.dart';
 //import 'package:location/location.dart';
-/*import 'package:geocoder/geocoder.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:intl/intl.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';*/
+//import 'package:google_maps_flutter/google_maps_flutter.dart';*/
 import 'package:pedometer/pedometer.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 String formatDate(DateTime d) {
   return d.toString().substring(0, 19);
 }
 
-void main() {
+/*void main() {
   runApp(MyApp());
-}
+}*/
 
-class MyApp extends StatefulWidget {
+class Pedo extends StatefulWidget {
+  static String id = 'ped';
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<Pedo> {
+
+
+  Position _currP;
+  String _currentAddress;
+  final Geolocator geolocator = Geolocator();
+  _getCurrentLocation() {
+    Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((
+        Position position) {
+      setState(() {
+        _currP = position;
+      });
+      _getAddressFromLatLng();
+    }
+    );
+  }
+  _getAddressFromLatLng() async {
+    try {
+      var p = await placemarkFromCoordinates(
+          _currP.latitude, _currP.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+        "${place.locality}, ${place.country}";
+      });
+      //return _currentAddress;
+    } catch (e) {
+      print(e);
+    }
+
+  }
+
+
   Stream<StepCount> _stepCountStream;
   Stream<PedestrianStatus> _pedestrianStatusStream;
   String _status = '?', _steps = '?';
@@ -75,6 +114,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    _getCurrentLocation();
     return MaterialApp(
       theme: ThemeData.dark().copyWith(
         primaryColor: Color(0xFF0A0E21),
@@ -100,7 +140,16 @@ class _MyAppState extends State<MyApp> {
               title: new Text('Profile'),
             ),
           ],
-          currentIndex: 0,
+          onTap: (index) {
+            if(index==0)
+              Navigator.pushNamed(context, Pedo.id);
+            else if (index ==1)
+              Navigator.pushNamed(context, CalculatorScreen.id);
+            /*setState(() {
+            _selectedIndex = index;
+          });*/
+          },
+          //currentIndex: 0,
           selectedItemColor: Colors.red[800],
           unselectedItemColor: Colors.black,
           backgroundColor: Color(0xFFFFE082),
@@ -109,6 +158,9 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Text(
+                '$_currentAddress',
+              ),
               Text(
                 'Steps',
                 style: TextStyle(fontSize: 30),

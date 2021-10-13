@@ -14,6 +14,7 @@ import 'result_screen.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class FitCalcStorage {
@@ -26,7 +27,7 @@ class FitCalcStorage {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/logs.txt');
+    return File('$path/fitlogs.txt');
   }
 
 
@@ -37,6 +38,8 @@ class FitCalcStorage {
     return file.writeAsString('$bmi \t $fat', mode: FileMode.append);  ////
   }
 }
+
+
 
 void getAddressFromLatLng() async {
     var widget;
@@ -148,6 +151,8 @@ class CalculatorScreenState extends State<CalculatorScreen> {
   int age = 20;
   int neck = 50;
   int waist = 90;
+
+
   getAddressFromLatLng(){}
   @override
   Widget build(BuildContext context) {
@@ -482,11 +487,12 @@ class CalculatorScreenState extends State<CalculatorScreen> {
                   'bmi':calc.calculateBMI(),
                   'fat':calc.calculateFP(),
                 });
+
               }
               /*if(true){
-                var x = calc.calculateBMI();
-                var y = calc.calculateFP();
-                widget.storage.writeFit(x,y);
+                //var x = calc.calculateBMI();
+                //var y = calc.calculateFP();
+                widget.storage.writeFit(calc.calculateBMI(),calc.calculateFP());
               }*/
               Navigator.push(
                 context,

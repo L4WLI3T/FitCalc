@@ -44,18 +44,17 @@ class _MyAppState extends State<Pedo> {
     try {
       var p = await placemarkFromCoordinates(
           _currP.latitude, _currP.longitude);
-
+      var spd = _currP.speed;
       Placemark place = p[0];
-
+      spd = double.parse((spd*3.6).toStringAsFixed(2));
       setState(() {
         _currentAddress =
-        "${place.locality}, ${place.country}";
+        "📍${place.locality}, ${place.country} \n \t\t\t\t\t\t\t\t\t\t\t\t\t${spd} km/hr ";
       });
       //return _currentAddress;
     } catch (e) {
       print(e);
     }
-
   }
 
 

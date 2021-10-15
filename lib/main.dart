@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bmi_calculator/screens/calculator_screen.dart';
 import 'package:flutter_bmi_calculator/screens/pedo.dart';
+import 'package:flutter_bmi_calculator/screens/chat.dart';
+import 'package:flutter_bmi_calculator/screens/chat_screen.dart';
 void main() {
   runApp(MyApp());
 }
@@ -31,6 +33,8 @@ class MyApp extends StatelessWidget {
         MyStatelessWidget.id: (context)=> MyStatelessWidget(),
         CalculatorScreen.id: (context) => CalculatorScreen(),
         Pedo.id: (context) => Pedo(),
+        //Chat.id: (context) => Chat(),
+        ChatScreen.id: (context)=> ChatScreen(),
       },
     );
   }
@@ -54,7 +58,8 @@ class MyStatelessWidget extends StatelessWidget {
             FlatButton(
               //onPressed: () => Navigator.pop(context, 'OK'),
               onPressed: ()=> Navigator.of(context).push(MaterialPageRoute(
-                builder:(context)=>CalculatorScreen(),
+                //builder:(context)=>CalculatorScreen(),
+                  builder:(context)=>Pedo(),
               )),
               child: const Text('Proceed'),
             ),

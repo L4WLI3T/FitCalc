@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bmi_calculator/screens/pedo.dart';
+import 'package:flutter_bmi_calculator/screens/calculator_screen.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,235 +10,128 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
+import 'package:flutter/cupertino.dart';
 
-void main() => runApp(WeatherApp(storage: WeatherStorage()));
-
-
-class WeatherStorage {
-  Future<String> get _localPath async {
-    final directory = await getExternalStorageDirectory();
-    print(directory.path);
-
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/weatherlogs.txt');
-  }
-
-
-  Future<File> writeWeather(String Weather) async {
-    final file = await _localFile;
-
-    // Write the file
-    return file.writeAsString('$Weather\n', mode: FileMode.append);  ////
-  }
+class ChatMessage{
+  String messageContent;
+  String messageType;
+  ChatMessage({@required this.messageContent, @required this.messageType});
 }
 
-class WeatherApp extends StatefulWidget {
-  static String id = 'weather_app';
-  const WeatherApp({key, this.storage}) : super(key: key);
-  final WeatherStorage storage;
+/*void main() {
+  runApp(Chat());
+}*/
 
+class Chat extends StatefulWidget {
+  static String id = 'cht';
   @override
-  _WeatherAppState createState() => _WeatherAppState();
+  _chatbox createState() => _chatbox();
 }
 
-class _WeatherAppState extends State<WeatherApp> {
-  int temperature = 0;
-  String location = 'Mumbai';
-  int woeid = 2487956;
-  String weather = 'clear';
-  String abbreviation = '';
-  String errorMessage = '';
-  Position _currentPosition;
-  final Geolocator geolocator = Geolocator();
-  Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best).then((
-  Position position) {
-  setState(() {
-  _currentPosition = position;
-  });
-  }
-  String _currentAddress;
-
-  String searchApiUrl =
-      'https://www.metaweather.com/api/location/search/?query=';
-  String locationApiUrl = 'https://www.metaweather.com/api/location/';
-
-  initState() {
-    super.initState();
-    fetchLocation();
-  }
-
-  void fetchSearch(String input) async {
-    try {
-      var searchResult = await http.get(searchApiUrl + input);
-      var result = json.decode(searchResult.body)[0];
-
-      setState(() {
-        location = result["title"];
-        woeid = result["woeid"];
-        errorMessage = '';
-      });
-    } catch (error) {
-      setState(() {
-        errorMessage =
-        "Sorry, we don't have data about this city. Try another one.";
-      });
-    }
-  }
-
-  Future<File> fetchLocation() async {
-    var locationResult = await http.get(locationApiUrl + woeid.toString());
-    var result = json.decode(locationResult.body);
-    var consolidated_weather = result["consolidated_weather"];
-    var data = consolidated_weather[0];
-
-    /*setState(() {
-      temperature = data["the_temp"].round();
-      weather = data["weather_state_name"].replaceAll(' ', '').toLowerCase();
-      abbreviation = data["weather_state_abbr"];
-    });*/
-  }
-
-  void onTextFieldSubmitted(String input) async {
-    fetchSearch(input);
-    fetchLocation();
-  }
-
-  _getCurrentLocation() {
-    Geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-
-      _getAddressFromLatLng();
-    }).catchError((e) {
-      print(e);
-    });
-  }
-
-  _getAddressFromLatLng() async {
-    try {
-      /*List<Placemark> p = await geolocator.placemarkFromCoordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-*/
-      List p=["hello"];
-      Placemark place = p[0];
-
-      setState(() {
-        _currentAddress =
-        "mumbai";
-        temperature = 10;
-        weather = 'sunny';
-      });
-      onTextFieldSubmitted(place.locality);
-      print(place.locality);
-      return widget.storage.writeWeather(_currentAddress + " -> $temperature," + weather);
-    } catch (e) {
-      print(e);
-    }
-
-  }
-
+class _chatbox extends State<Chat> {
+  final messageTextController = TextEditingController();
+  int _selectedIndex = 2;
+  String messageText;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('images/$weather.png'),
-              fit: BoxFit.cover,
-            ),
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Color(0xFF0A0E21),
+        scaffoldBackgroundColor: Color(0xFF0A0E21),
+      ),
+      home: Scaffold(
+          appBar: AppBar(
+            title: const Text('FitCalc 🏃‍🚴‍🏋️‍🤸‍'),
           ),
-          child: temperature == null
-              ? Center(child: CircularProgressIndicator())
-              : Scaffold(
-            appBar: AppBar(
-              actions: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(right: 20.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      _getCurrentLocation();
-                    },
-                    child: Icon(Icons.location_city, size: 36.0),
+          bottomNavigationBar: BottomNavigationBar(
+           //currentIndex: currentIndex = 2,
+            currentIndex: _selectedIndex,
+            items: [
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.home),
+            title: new Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.fitness_center),
+            title: new Text('Calculate'),
+          ),
+          BottomNavigationBarItem(
+            icon: new Icon(Icons.person),
+            title: new Text('Profile'),
+          ),
+          ],
+          onTap: (index) {
+          if(index==0)
+            Navigator.pushNamed(context, Pedo.id);
+          else if (index ==1)
+            Navigator.pushNamed(context, CalculatorScreen.id);
+          else if (index==2)
+            Navigator.pushNamed(context, Chat.id);
+          },
+            selectedItemColor: Colors.red[800],
+            unselectedItemColor: Colors.black,
+            backgroundColor: Color(0xFFFFE082),
+    /*setState(() {
+            _selectedIndex = index;
+          });*/
+          ),
+
+        body: Stack(
+        children: <Widget>[
+          Align(
+        alignment: Alignment.bottomLeft,
+          child: Container(
+          padding: EdgeInsets.only(left: 10,bottom: 10,top: 10),
+          height: 60,
+          width: double.infinity,
+          color: Colors.yellow.shade100,
+          child: Row(
+            children: <Widget>[
+              /*GestureDetector(
+                onTap: (){
+                },
+                child: Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlue,
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                )
-              ],
-              backgroundColor: Colors.transparent,
-              elevation: 0.0,
-            ),
-            resizeToAvoidBottomInset: false,
-            backgroundColor: Colors.transparent,
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Center(
-                      child: Image.network(
-                        'https://www.metaweather.com/static/img/weather/png/' +
-                            abbreviation +
-                            '.png',
-                        width: 100,
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        temperature.toString() + ' °C',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 60.0),
-                      ),
-                    ),
-                    Center(
-                      child: Text(
-                        location,
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 40.0),
-                      ),
-                    ),
-                  ],
+                  child: Icon(Icons.add, color: Colors.white, size: 20, ),
                 ),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      width: 300,
-                      child: TextField(
-                        onSubmitted: (String input) {
-                          onTextFieldSubmitted(input);
-                        },
-                        style:
-                        TextStyle(color: Colors.white, fontSize: 25),
-                        decoration: InputDecoration(
-                          hintText: 'Search another location...',
-                          hintStyle: TextStyle(
-                              color: Colors.white, fontSize: 18.0),
-                          prefixIcon:
-                          Icon(Icons.search, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding:
-                      const EdgeInsets.only(right: 32.0, left: 32.0),
-                      child: Text(errorMessage,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: Colors.redAccent,
-                              fontSize:
-                              Platform.isAndroid ? 15.0 : 20.0)),
-                    )
-                  ],
+              ),*/
+              SizedBox(width: 15,),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                      //fillColor: Color(0xFF0A0E21),
+                      hintText: "Type Help",
+                      hintStyle: TextStyle(color: Colors.black54),
+                      border: InputBorder.none
+                  ),
+                  controller: messageTextController,
+                  onChanged: (value){
+                    messageText=value;
+                  },
                 ),
-              ],
-            ),
-          )),
+              ),
+              SizedBox(width: 15,),
+              FloatingActionButton(
+                onPressed: (){},
+                child: Icon(Icons.send,color: Colors.white,size: 18,),
+                backgroundColor: Colors.indigo.shade300,
+                elevation: 0,
+              ),
+            ],
+
+          ),
+        ),
+      ),
+      ],
+    ),
+    ),
     );
+    //throw UnimplementedError();
   }
+
 }

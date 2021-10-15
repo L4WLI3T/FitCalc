@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_bmi_calculator/screens/chat_screen.dart';
 import 'package:flutter_bmi_calculator/screens/calculator_screen.dart';
 //import 'package:location/location.dart';
 import 'package:geocoding/geocoding.dart';
@@ -110,7 +111,7 @@ class _MyAppState extends State<Pedo> {
 
     if (!mounted) return;
   }
-
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     _getCurrentLocation();
@@ -125,6 +126,7 @@ class _MyAppState extends State<Pedo> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           //currentIndex: currentIndex = 0,
+            currentIndex: _selectedIndex,
           items: [
             BottomNavigationBarItem(
               icon: new Icon(Icons.home),
@@ -135,8 +137,8 @@ class _MyAppState extends State<Pedo> {
               title: new Text('Calculate'),
             ),
             BottomNavigationBarItem(
-              icon: new Icon(Icons.person),
-              title: new Text('Profile'),
+              icon: new Icon(Icons.message),
+              title: new Text('Chat Support'),
             ),
           ],
           onTap: (index) {
@@ -144,6 +146,8 @@ class _MyAppState extends State<Pedo> {
               Navigator.pushNamed(context, Pedo.id);
             else if (index ==1)
               Navigator.pushNamed(context, CalculatorScreen.id);
+            else if(index==2)
+              Navigator.pushNamed(context, ChatScreen.id);
             /*setState(() {
             _selectedIndex = index;
           });*/

@@ -1,6 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bmi_calculator/screens/chat_screen.dart';
 import 'package:flutter_bmi_calculator/screens/pedo.dart';
 import 'package:flutter_bmi_calculator/components/bottom_button.dart';
 import 'package:flutter_bmi_calculator/components/icon_content.dart';
@@ -112,7 +112,7 @@ class CalculatorScreenState extends State<CalculatorScreen> {
   List<Widget> _widgetOptions = <Widget>[
     Pedo(),
     CalculatorScreen(),
-
+    ChatScreen(),
     //ProfilePage(),
   ];
   /*int _selectedIndex = 0;
@@ -174,8 +174,8 @@ class CalculatorScreenState extends State<CalculatorScreen> {
         title: new Text('Calculate'),
        ),
         BottomNavigationBarItem(
-        icon: new Icon(Icons.person),
-        title: new Text('Profile'),
+        icon: new Icon(Icons.message),
+        title: new Text('Chat Support'),
         ),
        ],
         onTap: (index) {
@@ -183,6 +183,8 @@ class CalculatorScreenState extends State<CalculatorScreen> {
             Navigator.pushNamed(context, Pedo.id);
           else if (index ==1)
             Navigator.pushNamed(context, CalculatorScreen.id);
+          else if(index==2)
+            Navigator.pushNamed(context, ChatScreen.id);
           /*setState(() {
             _selectedIndex = index;
           });*/

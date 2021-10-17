@@ -64,6 +64,8 @@ class CalculatorScreen extends StatefulWidget {
   static String id = 'ctr';
   const CalculatorScreen({key, this.storage}) : super(key: key);
   final FitCalcStorage storage;
+
+  get Fitsto => new FitCalcStorage();
   @override
   CalculatorScreenState createState() => CalculatorScreenState();
 
@@ -491,11 +493,11 @@ class CalculatorScreenState extends State<CalculatorScreen> {
                 });
 
               }
-              /*if(true){
+              if(true){
                 //var x = calc.calculateBMI();
                 //var y = calc.calculateFP();
-                widget.storage.writeFit(calc.calculateBMI(),calc.calculateFP());
-              }*/
+                widget.Fitsto.writeFit(calc.calculateBMI(),calc.calculateFP());
+              }
               Navigator.push(
                 context,
                 MaterialPageRoute(

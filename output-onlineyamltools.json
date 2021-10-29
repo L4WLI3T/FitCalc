@@ -1,0 +1,38 @@
+﻿{
+  "name": "flutter_bmi_calculator",
+  "description": "A new Flutter application.",
+  "publish_to": "none",
+  "version": "1.0.0+1",
+  "environment": {
+    "sdk": ">=2.7.0 <3.0.0"
+  },
+  "dependencies": {
+    "flutter": {
+      "sdk": "flutter"
+    },
+    "cupertino_icons": "^0.1.3",
+    "pedometer": "^2.1.0",
+    "sqflite": "any",
+    "localstorage": "any",
+    "flutter_local_notifications": "any",
+    "flutter_logs": "any",
+    "firebase_core": "^0.3.4",
+    "firebase_auth": "^0.8.4+4",
+    "cloud_firestore": "^0.9.13+1",
+    "path_provider": "^1.6.28",
+    "geolocator": "any",
+    "geocoding": "any",
+    "permission_handler": "any",
+    "http": "^0.12.1",
+    "shared_preferences": "any",
+    "font_awesome_flutter": null
+  },
+  "dev_dependencies": {
+    "flutter_test": {
+      "sdk": "flutter"
+    }
+  },
+  "flutter": {
+    "uses-material-design": true
+  }
+}
